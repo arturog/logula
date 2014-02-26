@@ -1,9 +1,9 @@
-package com.codahale.logula.tests
+package com.boundary.logula.tests
 
-import com.codahale.logula.Log
-import org.apache.log4j.{Logger, Level}
-import com.codahale.simplespec.Spec
 import org.junit.Test
+import com.boundary.logula.Log
+import com.simple.simplespec.Spec
+import org.slf4j.Logger
 
 class LogExample(log: Log) {
   def doTrace() { log.trace("One, two, %d", 3) }
@@ -16,8 +16,6 @@ class LogExample(log: Log) {
   def doWarn(t: Throwable) { log.warn(t, "One, two, %d", 3) }
   def doError() { log.error("One, two, %d", 3) }
   def doError(t: Throwable) { log.error(t, "One, two, %d", 3) }
-  def doFatal() { log.fatal("One, two, %d", 3) }
-  def doFatal(t: Throwable) { log.fatal(t, "One, two, %d", 3) }
 }
 
 class LogSpec extends Spec {
@@ -25,11 +23,11 @@ class LogSpec extends Spec {
   val example = new LogExample(new Log(logger))
 
   class `Logging a TRACE message` {
-    logger.isEnabledFor(Level.TRACE).returns(true)
+    logger.isTraceEnabled.returns(true)
 
     @Test def `passes the message to the underlying logger` = {
       example.doTrace()
-      verify.one(logger).log("com.codahale.logula.Log", Level.TRACE, "One, two, 3", null)
+      verify.one(logger).trace("One, two, 3")
     }
 
     class `with an exception` {
@@ -37,28 +35,29 @@ class LogSpec extends Spec {
 
       @Test def `passes the message to the underlying logger` = {
         example.doTrace(t)
-        verify.one(logger).log("com.codahale.logula.Log", Level.TRACE, "One, two, 3", t)
+        verify.one(logger).trace("One, two, 3", t)
       }
     }
 
     class `when TRACE is disabled` {
       val t = mock[Throwable]
-      logger.isEnabledFor(Level.TRACE).returns(false)
+      logger.isTraceEnabled.returns(false)
 
       @Test def `doesn't pass the message to the underlying logger` = {
         example.doTrace()
         example.doTrace(t)
-        verify.no(logger).log(any, any, any)
+        verify.no(logger).trace(any)
+        verify.no(logger).trace(any, isA[Throwable])
       }
     }
   }
 
   class `Logging a DEBUG message` {
-    logger.isEnabledFor(Level.DEBUG).returns(true)
+    logger.isDebugEnabled.returns(true)
 
     @Test def `passes the message to the underlying logger` = {
       example.doDebug()
-      verify.one(logger).log("com.codahale.logula.Log", Level.DEBUG, "One, two, 3", null)
+      verify.one(logger).debug("One, two, 3")
     }
 
     class `with an exception` {
@@ -66,28 +65,29 @@ class LogSpec extends Spec {
 
       @Test def `passes the message to the underlying logger` = {
         example.doDebug(t)
-        verify.one(logger).log("com.codahale.logula.Log", Level.DEBUG, "One, two, 3", t)
+        verify.one(logger).debug("One, two, 3", t)
       }
     }
 
     class `when DEBUG is disabled` {
       val t = mock[Throwable]
-      logger.isEnabledFor(Level.DEBUG).returns(false)
+      logger.isDebugEnabled.returns(false)
 
       @Test def `doesn't pass the message to the underlying logger` = {
         example.doDebug()
         example.doDebug(t)
-        verify.no(logger).log(any, any, any)
+        verify.no(logger).debug(any)
+        verify.no(logger).debug(any, isA[Throwable])
       }
     }
   }
 
   class `Logging a INFO message` {
-    logger.isEnabledFor(Level.INFO).returns(true)
+    logger.isInfoEnabled.returns(true)
 
     @Test def `passes the message to the underlying logger` = {
       example.doInfo()
-      verify.one(logger).log("com.codahale.logula.Log", Level.INFO, "One, two, 3", null)
+      verify.one(logger).info("One, two, 3")
     }
 
     class `with an exception` {
@@ -95,28 +95,29 @@ class LogSpec extends Spec {
 
       @Test def `passes the message to the underlying logger` = {
         example.doInfo(t)
-        verify.one(logger).log("com.codahale.logula.Log", Level.INFO, "One, two, 3", t)
+        verify.one(logger).info("One, two, 3", t)
       }
     }
 
     class `when INFO is disabled` {
       val t = mock[Throwable]
-      logger.isEnabledFor(Level.INFO).returns(false)
+      logger.isInfoEnabled.returns(false)
 
       @Test def `doesn't pass the message to the underlying logger` = {
         example.doInfo()
         example.doInfo(t)
-        verify.no(logger).log(any, any, any)
+        verify.no(logger).info(any)
+        verify.no(logger).info(any, isA[Throwable])
       }
     }
   }
 
   class `Logging a WARN message` {
-    logger.isEnabledFor(Level.WARN).returns(true)
+    logger.isWarnEnabled.returns(true)
 
     @Test def `passes the message to the underlying logger` = {
       example.doWarn()
-      verify.one(logger).log("com.codahale.logula.Log", Level.WARN, "One, two, 3", null)
+      verify.one(logger).warn("One, two, 3")
     }
 
     class `with an exception` {
@@ -124,28 +125,29 @@ class LogSpec extends Spec {
 
       @Test def `passes the message to the underlying logger` = {
         example.doWarn(t)
-        verify.one(logger).log("com.codahale.logula.Log", Level.WARN, "One, two, 3", t)
+        verify.one(logger).warn("One, two, 3", t)
       }
     }
 
     class `when WARN is disabled` {
       val t = mock[Throwable]
-      logger.isEnabledFor(Level.WARN).returns(false)
+      logger.isWarnEnabled.returns(false)
 
       @Test def `doesn't pass the message to the underlying logger` = {
         example.doWarn()
         example.doWarn(t)
-        verify.no(logger).log(any, any, any)
+        verify.no(logger).warn(any)
+        verify.no(logger).warn(any, isA[Throwable])
       }
     }
   }
 
   class `Logging a ERROR message` {
-    logger.isEnabledFor(Level.ERROR).returns(true)
+    logger.isErrorEnabled.returns(true)
 
     @Test def `passes the message to the underlying logger` = {
       example.doError()
-      verify.one(logger).log("com.codahale.logula.Log", Level.ERROR, "One, two, 3", null)
+      verify.one(logger).error("One, two, 3")
     }
 
     class `with an exception` {
@@ -153,47 +155,19 @@ class LogSpec extends Spec {
 
       @Test def `passes the message to the underlying logger` = {
         example.doError(t)
-        verify.one(logger).log("com.codahale.logula.Log", Level.ERROR, "One, two, 3", t)
+        verify.one(logger).error("One, two, 3", t)
       }
     }
 
     class `when ERROR is disabled` {
       val t = mock[Throwable]
-      logger.isEnabledFor(Level.ERROR).returns(false)
+      logger.isErrorEnabled.returns(false)
 
       @Test def `doesn't pass the message to the underlying logger` = {
         example.doError()
         example.doError(t)
-        verify.no(logger).log(any, any, any)
-      }
-    }
-  }
-
-  class `Logging a FATAL message` {
-    logger.isEnabledFor(Level.FATAL).returns(true)
-
-    @Test def `passes the message to the underlying logger` = {
-      example.doFatal()
-      verify.one(logger).log("com.codahale.logula.Log", Level.FATAL, "One, two, 3", null)
-    }
-
-    class `with an exception` {
-      val t = mock[Throwable]
-
-      @Test def `passes the message to the underlying logger` = {
-        example.doFatal(t)
-        verify.one(logger).log("com.codahale.logula.Log", Level.FATAL, "One, two, 3", t)
-      }
-    }
-
-    class `when FATAL is disabled` {
-      val t = mock[Throwable]
-      logger.isEnabledFor(Level.FATAL).returns(false)
-
-      @Test def `doesn't pass the message to the underlying logger` = {
-        example.doFatal()
-        example.doFatal(t)
-        verify.no(logger).log(any, any, any)
+        verify.no(logger).error(any)
+        verify.no(logger).error(any, isA[Throwable])
       }
     }
   }

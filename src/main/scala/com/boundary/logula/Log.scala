@@ -1,7 +1,7 @@
-package com.codahale.logula
+package com.boundary.logula
 
-import org.apache.log4j.{Level, Logger}
 import reflect.NameTransformer
+import org.slf4j.{LoggerFactory, Logger}
 
 /**
  * Log's companion object.
@@ -20,7 +20,7 @@ object Log {
   /**
    * Returns a log with the given name.
    */
-  def forName(name: String) = new Log(Logger.getLogger(clean(name)))
+  def forName(name: String) = new Log(LoggerFactory.getLogger(clean(name)))
 
   private def clean(s: String) = NameTransformer.decode(if (s.endsWith("$")) {
     s.substring(0, s.length - 1)
@@ -47,13 +47,15 @@ object Log {
  * @author coda
  */
 class Log(private val logger: Logger) {
-  import Log._
-  
+
   /**
    * Logs a message with optional parameters at level TRACE.
    */
   def trace(message: String, params: Any*) {
-    log(Level.TRACE, None, message, params)
+    if (logger.isTraceEnabled) {
+      val statement = if (params.isEmpty) message else message.format(params:_*)
+      logger.trace(statement)
+    }
   }
 
   /**
@@ -61,14 +63,20 @@ class Log(private val logger: Logger) {
    * TRACE.
    */
   def trace(thrown: Throwable, message: String, params: Any*) {
-    log(Level.TRACE, Some(thrown), message, params)
+    if (logger.isTraceEnabled) {
+      val statement = if (params.isEmpty) message else message.format(params:_*)
+      logger.trace(statement, thrown)
+    }
   }
 
   /**
    * Logs a message with optional parameters at level DEBUG.
    */
   def debug(message: String, params: Any*) {
-    log(Level.DEBUG, None, message, params)
+    if (logger.isDebugEnabled) {
+      val statement = if (params.isEmpty) message else message.format(params:_*)
+      logger.debug(statement)
+    }
   }
 
   /**
@@ -76,14 +84,20 @@ class Log(private val logger: Logger) {
    * DEBUG.
    */
   def debug(thrown: Throwable, message: String, params: Any*) {
-    log(Level.DEBUG, Some(thrown), message, params)
+    if (logger.isDebugEnabled) {
+      val statement = if (params.isEmpty) message else message.format(params:_*)
+      logger.debug(statement, thrown)
+    }
   }
 
   /**
    * Logs a message with optional parameters at level INFO.
    */
   def info(message: String, params: Any*) {
-    log(Level.INFO, None, message, params)
+    if (logger.isInfoEnabled) {
+      val statement = if (params.isEmpty) message else message.format(params:_*)
+      logger.info(statement)
+    }
   }
 
   /**
@@ -91,14 +105,20 @@ class Log(private val logger: Logger) {
    * INFO.
    */
   def info(thrown: Throwable, message: String, params: Any*) {
-    log(Level.INFO, Some(thrown), message, params)
+    if (logger.isInfoEnabled) {
+      val statement = if (params.isEmpty) message else message.format(params:_*)
+      logger.info(statement, thrown)
+    }
   }
 
   /**
    * Logs a message with optional parameters at level WARN.
    */
   def warn(message: String, params: Any*) {
-    log(Level.WARN, None, message, params)
+    if (logger.isWarnEnabled) {
+      val statement = if (params.isEmpty) message else message.format(params:_*)
+      logger.warn(statement)
+    }
   }
 
   /**
@@ -106,14 +126,20 @@ class Log(private val logger: Logger) {
    * WARN.
    */
   def warn(thrown: Throwable, message: String, params: Any*) {
-    log(Level.WARN, Some(thrown), message, params)
+    if (logger.isWarnEnabled) {
+      val statement = if (params.isEmpty) message else message.format(params:_*)
+      logger.warn(statement, thrown)
+    }
   }
 
   /**
    * Logs a message with optional parameters at level ERROR.
    */
   def error(message: String, params: Any*) {
-    log(Level.ERROR, None, message, params)
+    if (logger.isErrorEnabled) {
+      val statement = if (params.isEmpty) message else message.format(params:_*)
+      logger.error(statement)
+    }
   }
 
   /**
@@ -121,54 +147,19 @@ class Log(private val logger: Logger) {
    * ERROR.
    */
   def error(thrown: Throwable, message: String, params: Any*) {
-    log(Level.ERROR, Some(thrown), message, params)
-  }
-
-  /**
-   * Logs a message with optional parameters at level FATAL.
-   */
-
-  def fatal(message: String, params: Any*) {
-    log(Level.FATAL, None, message, params)
-  }
-
-  /**
-   * Logs a thrown exception and a message with optional parameters at level
-   * FATAL.
-   */
-
-  def fatal(thrown: Throwable, message: String, params: Any*) {
-    log(Level.FATAL, Some(thrown), message, params)
-  }
-
-  /**
-   * Returns the log's current level.
-   */
-  def level = logger.getLevel
-
-  /**
-   * Sets the log's current level.
-   */
-  def level_=(level: Level) {
-    logger.setLevel(level)
-  }
-
-  def isTraceEnabled = logger.isEnabledFor(Level.TRACE)
-
-  def isDebugEnabled = logger.isEnabledFor(Level.DEBUG)
-
-  def isInfoEnabled = logger.isEnabledFor(Level.INFO)
-
-  def isWarnEnabled = logger.isEnabledFor(Level.WARN)
-
-  def isErrorEnabled = logger.isEnabledFor(Level.ERROR)
-
-  def isFatalEnabled = logger.isEnabledFor(Level.FATAL)
-
-  private def log(level: Level, thrown: Option[Throwable], message: String, values: Seq[Any]) {
-    if (logger.isEnabledFor(level)) {
-      val statement = if (values.isEmpty) message else message.format(values:_*)
-      logger.log(CallerFQCN, level, statement, thrown.orNull)
+    if (logger.isErrorEnabled) {
+      val statement = if (params.isEmpty) message else message.format(params:_*)
+      logger.error(statement, thrown)
     }
   }
+
+  def isTraceEnabled = logger.isTraceEnabled
+
+  def isDebugEnabled = logger.isDebugEnabled
+
+  def isInfoEnabled = logger.isInfoEnabled
+
+  def isWarnEnabled = logger.isWarnEnabled
+
+  def isErrorEnabled = logger.isErrorEnabled
 }

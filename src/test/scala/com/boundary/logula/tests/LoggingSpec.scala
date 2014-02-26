@@ -1,8 +1,8 @@
-package com.codahale.logula.tests
+package com.boundary.logula.tests
 
-import com.codahale.simplespec.Spec
-import com.codahale.logula.{Log, Logging}
 import org.junit.Test
+import com.boundary.logula.{Logging, Log}
+import com.simple.simplespec.Spec
 
 class LoggingExample extends Logging {
   def getLog = log
