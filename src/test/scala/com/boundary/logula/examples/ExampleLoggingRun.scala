@@ -19,6 +19,7 @@ class ThingDoer extends Logging {
 
 object ExampleLoggingRun extends Logging {
   def main(args: Array[String]) {
+    System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "trace")
     new ThingDoer().run()
   }
 }
